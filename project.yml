@@ -1,0 +1,92 @@
+name: ClaudeIPBar
+options:
+  bundleIdPrefix: me.blacksweaters.claudeipbar
+  deploymentTarget:
+    macOS: "14.0"
+  developmentLanguage: en
+  xcodeVersion: "15.0"
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    DEVELOPMENT_TEAM: ""  # 用户在 Xcode GUI 里填自己的 Apple ID
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "-"  # Sign to Run Locally
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+
+packages:
+  ClaudeIPBarCore:
+    path: "."  # 本地 SPM 包
+
+targets:
+  # ====== 宿主 App ======
+  ClaudeIPBar:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleName: ClaudeIPBar
+        CFBundleDisplayName: ClaudeIPBar
+        LSApplicationCategoryType: public.app-category.utilities
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSHumanReadableCopyright: "Copyright © 2026 blacksweaters"
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+    entitlements:
+      path: App/ClaudeIPBar.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.application-groups:
+          - group.me.blacksweaters.claudeipbar
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: me.blacksweaters.claudeipbar
+        PRODUCT_NAME: ClaudeIPBar
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_HARDENED_RUNTIME: YES
+        COMBINE_HIDPI_IMAGES: YES
+    dependencies:
+      - target: ClaudeIPBarWidget
+      - package: ClaudeIPBarCore
+
+  # ====== Widget Extension ======
+  ClaudeIPBarWidget:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Widget
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleName: ClaudeIPBarWidget
+        CFBundleDisplayName: ClaudeIPBarWidget
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Widget/ClaudeIPBarWidget.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.application-groups:
+          - group.me.blacksweaters.claudeipbar
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: me.blacksweaters.claudeipbar.widget
+        PRODUCT_NAME: ClaudeIPBarWidget
+        SKIP_INSTALL: YES
+    dependencies:
+      - package: ClaudeIPBarCore
+      - sdk: SwiftUI.framework
+      - sdk: WidgetKit.framework
